@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { View, Text, Image, ScrollView, Pressable, StyleSheet } from 'react-native'
 import backendClient from '../utils/backendClient'
 import Carregando from './Carregando'
+import Provedores from './Provedores'
 import { formatarNota, formatarDuracao } from '../utils/formatacao'
 
 export default function DetalhesFilme({ id, onVoltar }) {
@@ -38,7 +39,6 @@ export default function DetalhesFilme({ id, onVoltar }) {
     )
   }
 
-  // Montagem da linha de informações conforme regras do PDF
   const partesInfo = []
   if (filme.ano) partesInfo.push(filme.ano)
   
@@ -50,6 +50,12 @@ export default function DetalhesFilme({ id, onVoltar }) {
   }
   
   const linhaInformacoes = partesInfo.join(' · ')
+
+  const assinatura = filme.ondeAssistir?.assinatura || []
+  const aluguel = filme.ondeAssistir?.aluguel || []
+  const compra = filme.ondeAssistir?.compra || []
+
+  const semNenhumProvedor = assinatura.length === 0 && aluguel.length === 0 && compra.length === 0
 
   return (
     <View style={styles.container}>
@@ -86,6 +92,29 @@ export default function DetalhesFilme({ id, onVoltar }) {
             {filme.sinopse ? filme.sinopse : "Sinopse indisponível."}
           </Text>
         </View>
+
+        {/* Seção de Onde Assistir (Fase 9) */}
+        {filme.ondeAssistir && (
+          <View style={styles.secaoOndeAssistir}>
+            <Text style={styles.tituloOndeAssistir}>Onde assistir no Brasil</Text>
+            
+            {semNenhumProvedor ? (
+              <Text style={styles.textoIndisponivel}>
+                Este filme não está disponível em nenhum serviço no Brasil no momento.
+              </Text>
+            ) : (
+              <>
+                <Provedores titulo="Assinatura" provedores={assinatura} />
+                <Provedores titulo="Aluguel" provedores={aluguel} />
+                <Provedores titulo="Compra" provedores={compra} />
+              </>
+            )}
+
+            <Text style={styles.notaRodape}>
+              Dados de disponibilidade: JustWatch, exigido pelos termos de uso dos dados.
+            </Text>
+          </View>
+        )}
       </ScrollView>
     </View>
   )
@@ -106,7 +135,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   scroll: {
-    paddingBottom: 20,
+    paddingBottom: 25,
   },
   fundo: {
     width: '100%',
@@ -170,6 +199,34 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#444',
     lineHeight: 20,
+  },
+  secaoOndeAssistir: {
+    marginTop: 14,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    paddingTop: 10,
+  },
+  tituloOndeAssistir: {
+    fontSize: 19,
+    fontWeight: 'bold',
+    color: '#333',
+    marginHorizontal: 12,
+    marginBottom: 6,
+  },
+  textoIndisponivel: {
+    fontSize: 14,
+    color: '#666',
+    marginHorizontal: 12,
+    marginVertical: 6,
+    fontStyle: 'italic',
+  },
+  notaRodape: {
+    fontSize: 11,
+    color: '#888',
+    fontStyle: 'italic',
+    marginHorizontal: 12,
+    marginTop: 14,
+    textAlign: 'center',
   },
   centro: {
     flex: 1,
