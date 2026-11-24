@@ -1,10 +1,10 @@
 import React from 'react'
-import { View, Text, Image, StyleSheet } from 'react-native'
+import { View, Text, Image, Pressable, StyleSheet } from 'react-native'
 import { formatarNota } from '../utils/formatacao'
 
-export default function CartaoFilme({ titulo, ano, nota, poster }) {
+export default function CartaoFilme({ titulo, ano, nota, poster, onSelecionar }) {
   return (
-    <View style={styles.cartao}>
+    <Pressable style={styles.cartao} onPress={onSelecionar}>
       {poster ? (
         <Image source={{ uri: poster }} style={styles.poster} />
       ) : (
@@ -17,7 +17,7 @@ export default function CartaoFilme({ titulo, ano, nota, poster }) {
         {ano ? <Text style={styles.ano}>{ano}</Text> : null}
         <Text style={styles.nota}>{formatarNota(nota)}</Text>
       </View>
-    </View>
+    </Pressable>
   )
 }
 

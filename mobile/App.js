@@ -6,6 +6,7 @@ import Creditos from './src/components/Creditos'
 import Carregando from './src/components/Carregando'
 import ListaFilmes from './src/components/ListaFilmes'
 import Busca from './src/components/Busca'
+import DetalhesFilme from './src/components/DetalhesFilme'
 import backendClient from './src/utils/backendClient'
 
 export default function App() {
@@ -13,10 +14,12 @@ export default function App() {
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState(null)
 
-  // Novos estados da Fase 7
   const [termo, setTermo] = useState('')
   const [termoBuscado, setTermoBuscado] = useState('')
   const [resultados, setResultados] = useState(null)
+
+  // Estado da Fase 8
+  const [filmeSelecionado, setFilmeSelecionado] = useState(null)
 
   useEffect(() => {
     async function carregarFilmesEmAlta() {
@@ -57,8 +60,7 @@ export default function App() {
     setErro(null)
   }
 
-  // Lógica de renderização de acordo com as condições da Tabela 8
-  function renderizarConteudo() {
+  function renderizarConteudoTelaInicial() {
     if (carregando) {
       const mensagemCarregamento = resultados !== null || termo !== '' 
         ? "Procurando filmes..." 
@@ -75,7 +77,13 @@ export default function App() {
     }
 
     if (resultados === null) {
-      return <ListaFilmes titulo="Em alta nesta semana" filmes={emAlta} />
+      return (
+        <ListaFilmes
+          titulo="Em alta nesta semana"
+          filmes={emAlta}
+          onSelecionarFilme={setFilmeSelecionado}
+        />
+      )
     }
 
     if (resultados.length === 0) {
@@ -86,7 +94,13 @@ export default function App() {
       )
     }
 
-    return <ListaFilmes titulo={`Resultados para "${termoBuscado}"`} filmes={resultados} />
+    return (
+      <ListaFilmes
+        titulo={`Resultados para "${termoBuscado}"`}
+        filmes={resultados}
+        onSelecionarFilme={setFilmeSelecionado}
+      />
+    )
   }
 
   return (
@@ -94,16 +108,24 @@ export default function App() {
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         <Cabecalho />
         
-        <Busca
-          termo={termo}
-          onTermoAlterado={setTermo}
-          onBuscar={handleBuscar}
-          onLimpar={handleLimpar}
-        />
-
-        <View style={styles.conteudo}>
-          {renderizarConteudo()}
-        </View>
+        {filmeSelecionado === null ? (
+          <>
+            <Busca
+              termo={termo}
+              onTermoAlterado={setTermo}
+              onBuscar={handleBuscar}
+              onLimpar={handleLimpar}
+            />
+            <View style={styles.conteudo}>
+              {renderizarConteudoTelaInicial()}
+            </View>
+          </>
+        ) : (
+          <DetalhesFilme
+            id={filmeSelecionado}
+            onVoltar={() => setFilmeSelecionado(null)}
+          />
+        )}
 
         <Creditos />
       </SafeAreaView>

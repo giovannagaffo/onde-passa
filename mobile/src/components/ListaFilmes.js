@@ -2,7 +2,7 @@ import React from 'react'
 import { View, Text, FlatList, StyleSheet } from 'react-native'
 import CartaoFilme from './CartaoFilme'
 
-export default function ListaFilmes({ titulo, filmes }) {
+export default function ListaFilmes({ titulo, filmes, onSelecionarFilme }) {
   return (
     <View style={styles.container}>
       <Text style={styles.tituloSecao}>{titulo}</Text>
@@ -15,6 +15,7 @@ export default function ListaFilmes({ titulo, filmes }) {
             ano={item.ano}
             nota={item.nota}
             poster={item.poster}
+            onSelecionar={() => onSelecionarFilme(item.id)}
           />
         )}
       />
